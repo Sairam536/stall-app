@@ -1,0 +1,19 @@
+{
+  "name": "stallpay",
+  "version": "1.0.0",
+  "description": "StallPay – College Stall Management System for Entrepreneur Club Stall Event",
+  "main": "index.html",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test/verify.js"
+  },
+  "keywords": [
+    "stallpay",
+    "college-fest",
+    "stall-management",
+    "upi-qr",
+    "firebase"
+  ],
+  "author": "Entrepreneur Club",
+  "license": "MIT"
+}

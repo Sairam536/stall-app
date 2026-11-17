@@ -1,0 +1,1539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>StallPay – College Stall Management System | Entrepreneur Club</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+              800: '#065f46',
+              900: '#064e3b'
+            },
+            club: {
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="css/styles.css">
+
+  <!-- QRCode.js Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  
+  <!-- HTML5 QR Code Scanner -->
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+
+  <!-- Supabase JS Client SDK v2 -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col pb-20 md:pb-6">
+
+  <!-- ========================================================================
+       TOP NAVIGATION BAR
+       ======================================================================== -->
+  <header class="sticky top-0 z-40 glass-header border-b border-slate-200/80 shadow-sm transition-all">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      
+      <!-- Brand Logo & Club Tag -->
+      <a href="#home" class="flex items-center gap-3 group" onclick="App.showView('home')">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 via-emerald-500 to-teal-400 flex items-center justify-center text-white shadow-md shadow-brand-500/20 group-hover:scale-105 transition-transform">
+          <i class="fa-solid fa-bolt text-lg"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-xl font-extrabold tracking-tight font-heading bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">StallPay</span>
+            <span class="text-[10px] font-bold uppercase tracking-wider bg-brand-100 text-brand-800 px-2 py-0.5 rounded-full">Fest '26</span>
+          </div>
+          <p class="text-[11px] text-slate-500 font-medium leading-none" id="header-stall-name">Entrepreneur Club Stall</p>
+        </div>
+      </a>
+
+      <!-- Desktop Nav Links -->
+      <nav class="hidden md:flex items-center gap-1 text-sm font-medium">
+        <button onclick="App.showView('home')" class="nav-btn px-3 py-2 rounded-lg text-slate-600 hover:text-brand-600 hover:bg-slate-100 transition-colors" data-target="home">
+          <i class="fa-solid fa-house mr-1.5 text-xs"></i> Home
+        </button>
+        <button onclick="App.showView('menu')" class="nav-btn px-3 py-2 rounded-lg text-slate-600 hover:text-brand-600 hover:bg-slate-100 transition-colors" data-target="menu">
+          <i class="fa-solid fa-utensils mr-1.5 text-xs"></i> Stall Menu
+        </button>
+        <button onclick="App.showView('pass')" class="nav-btn px-3 py-2 rounded-lg text-slate-600 hover:text-brand-600 hover:bg-slate-100 transition-colors" data-target="pass">
+          <i class="fa-solid fa-id-badge mr-1.5 text-xs"></i> My Stall Pass
+        </button>
+        <button onclick="App.showView('history')" class="nav-btn px-3 py-2 rounded-lg text-slate-600 hover:text-brand-600 hover:bg-slate-100 transition-colors" data-target="history">
+          <i class="fa-solid fa-clock-rotate-left mr-1.5 text-xs"></i> Orders
+        </button>
+        <button onclick="App.showView('feedback')" class="nav-btn px-3 py-2 rounded-lg text-slate-600 hover:text-brand-600 hover:bg-slate-100 transition-colors" data-target="feedback">
+          <i class="fa-solid fa-star mr-1.5 text-xs"></i> Reviews
+        </button>
+      </nav>
+
+      <!-- Right Action Controls -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        
+        <!-- Cart Drawer Toggle -->
+        <button onclick="App.openCartModal()" class="relative p-2.5 rounded-xl bg-slate-100 hover:bg-brand-50 text-slate-700 hover:text-brand-600 transition-all" title="View Cart">
+          <i class="fa-solid fa-bag-shopping text-base"></i>
+          <span id="cart-badge-count" class="absolute -top-1 -right-1 bg-brand-600 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center shadow-sm">0</span>
+        </button>
+
+        <!-- Active Customer Profile / Login Button -->
+        <div id="nav-customer-container">
+          <!-- Injected dynamically by app.js -->
+        </div>
+
+        <!-- Team Dashboard Link -->
+        <button onclick="App.showView('team-dashboard')" class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-sm transition-all" title="Team Login">
+          <i class="fa-solid fa-shield-halved text-amber-400"></i>
+          <span class="hidden sm:inline">Team Desk</span>
+        </button>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- ========================================================================
+       MAIN APP CONTAINER (VIEWS SWITCHED DYNAMICALLY)
+       ======================================================================== -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- ====================================================================
+         VIEW 1: HOME PAGE
+         ==================================================================== -->
+    <section id="view-home" class="view-section active space-y-8">
+      
+      <!-- Hero Banner -->
+      <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white p-6 sm:p-10 shadow-xl border border-slate-800">
+        <!-- Background Decorative Orbs -->
+        <div class="absolute -top-24 -right-24 w-72 h-72 bg-brand-500/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-24 -left-24 w-72 h-72 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="relative z-10 max-w-3xl space-y-4">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-xs font-medium text-emerald-300">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+            Stall Desk Live • Accepting UPI Orders
+          </div>
+
+          <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight">
+            Welcome to <span class="bg-gradient-to-r from-emerald-400 via-teal-300 to-indigo-300 bg-clip-text text-transparent">StallPay</span>
+          </h1>
+          
+          <p class="text-slate-300 text-sm sm:text-base leading-relaxed max-w-2xl">
+            The official digital counter for our <strong class="text-white">College Entrepreneur Club Stall</strong>. Browse delicious snacks, generate UPI payment QR codes, and pick up your orders instantly with token verification!
+          </p>
+
+          <!-- Main CTA Buttons -->
+          <div class="pt-2 flex flex-wrap items-center gap-3">
+            <button onclick="App.showView('menu')" class="px-6 py-3.5 rounded-xl bg-gradient-to-r from-brand-600 to-emerald-500 hover:from-brand-500 hover:to-emerald-400 text-white font-semibold text-sm shadow-lg shadow-brand-600/30 hover:shadow-brand-600/50 flex items-center gap-2 transition-all transform hover:-translate-y-0.5">
+              <i class="fa-solid fa-utensils"></i> Browse Stall Menu & Order
+            </button>
+            <button onclick="App.showView('pass')" class="px-5 py-3.5 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 font-semibold text-sm backdrop-blur-md flex items-center gap-2 transition-all">
+              <i class="fa-solid fa-qrcode"></i> Get Customer Stall Pass
+            </button>
+            <button onclick="App.showView('team-dashboard')" class="px-5 py-3.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 font-semibold text-sm flex items-center gap-2 transition-all">
+              <i class="fa-solid fa-lock text-xs"></i> Team Login
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Event Highlights Ticker -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        <div class="glass-card p-4 rounded-2xl flex items-center gap-3.5 border border-slate-200">
+          <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl flex-shrink-0">
+            <i class="fa-solid fa-indian-rupee-sign"></i>
+          </div>
+          <div>
+            <p class="text-xs text-slate-500 font-medium">Verified Sales</p>
+            <h3 class="text-xl font-extrabold text-slate-900" id="home-stat-sales">₹0</h3>
+          </div>
+        </div>
+
+        <div class="glass-card p-4 rounded-2xl flex items-center gap-3.5 border border-slate-200">
+          <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl flex-shrink-0">
+            <i class="fa-solid fa-clipboard-check"></i>
+          </div>
+          <div>
+            <p class="text-xs text-slate-500 font-medium">Orders Completed</p>
+            <h3 class="text-xl font-extrabold text-slate-900" id="home-stat-orders">0</h3>
+          </div>
+        </div>
+
+        <div class="glass-card p-4 rounded-2xl flex items-center gap-3.5 border border-slate-200">
+          <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl flex-shrink-0">
+            <i class="fa-solid fa-hourglass-half"></i>
+          </div>
+          <div>
+            <p class="text-xs text-slate-500 font-medium">Pending Verification</p>
+            <h3 class="text-xl font-extrabold text-slate-900" id="home-stat-pending">0</h3>
+          </div>
+        </div>
+
+        <div class="glass-card p-4 rounded-2xl flex items-center gap-3.5 border border-slate-200">
+          <div class="w-12 h-12 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-xl flex-shrink-0">
+            <i class="fa-solid fa-star"></i>
+          </div>
+          <div>
+            <p class="text-xs text-slate-500 font-medium">Stall Rating</p>
+            <h3 class="text-xl font-extrabold text-slate-900 flex items-center gap-1">
+              <span id="home-stat-rating">5.0</span>
+              <span class="text-xs text-amber-500 font-normal">★ (Reviews)</span>
+            </h3>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Two Main Role Pathways -->
+      <div class="grid md:grid-cols-2 gap-6">
+        
+        <!-- Customer Pathway Card -->
+        <div class="glass-card p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+          <div class="w-12 h-12 rounded-2xl bg-brand-100 text-brand-700 flex items-center justify-center text-2xl mb-4">
+            <i class="fa-solid fa-basket-shopping"></i>
+          </div>
+          <span class="text-xs font-bold uppercase tracking-wider text-brand-700">For Students & Guests</span>
+          <h2 class="text-2xl font-bold text-slate-900 mt-1 mb-2">Customer Self-Service</h2>
+          <p class="text-sm text-slate-600 mb-6 leading-relaxed">
+            Order without standing in long queues! Pick your momos, beverages, and merch, pay directly via Google Pay / PhonePe / Paytm, and track verification live on your screen.
+          </p>
+          <div class="flex flex-wrap gap-2.5">
+            <button onclick="App.showView('menu')" class="px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold transition-all">
+              Order Food Now
+            </button>
+            <button onclick="App.showView('pass')" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-all">
+              My Stall Pass & ID
+            </button>
+            <button onclick="App.showView('history')" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-all">
+              Track Order Status
+            </button>
+          </div>
+        </div>
+
+        <!-- Team Pathway Card -->
+        <div class="glass-card p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+          <div class="w-12 h-12 rounded-2xl bg-slate-900 text-amber-400 flex items-center justify-center text-2xl mb-4">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          <span class="text-xs font-bold uppercase tracking-wider text-indigo-600">For E-Club Coordinators</span>
+          <h2 class="text-2xl font-bold text-slate-900 mt-1 mb-2">Team & Counter Desk</h2>
+          <p class="text-sm text-slate-600 mb-6 leading-relaxed">
+            Verify UTR references against bank notifications, scan tokens at pickup, update item stock, add raw material expenses, and track net club profit in real time!
+          </p>
+          <div class="flex flex-wrap gap-2.5">
+            <button onclick="App.showView('team-dashboard')" class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold transition-all flex items-center gap-1.5">
+              <i class="fa-solid fa-lock text-xs text-amber-400"></i> Enter Team Desk (PIN)
+            </button>
+            <button onclick="App.openScannerModal()" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-all flex items-center gap-1.5">
+              <i class="fa-solid fa-camera text-xs"></i> Counter Scanner
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- How StallPay Works -->
+      <div class="glass-card p-6 sm:p-8 rounded-3xl border border-slate-200">
+        <div class="text-center max-w-xl mx-auto mb-8">
+          <span class="text-xs font-bold uppercase tracking-wider text-brand-600">Seamless Fest Experience</span>
+          <h2 class="text-2xl font-bold text-slate-900 mt-1">How StallPay Works in 3 Simple Steps</h2>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-6">
+          <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200/80 text-center space-y-3">
+            <div class="w-12 h-12 mx-auto rounded-full bg-brand-100 text-brand-700 font-extrabold flex items-center justify-center text-lg">1</div>
+            <h3 class="font-bold text-slate-900 text-base">Register & Choose Items</h3>
+            <p class="text-xs text-slate-600 leading-relaxed">Enter your phone number to get your unique customer pass, browse the menu, and add items to your cart.</p>
+          </div>
+
+          <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200/80 text-center space-y-3">
+            <div class="w-12 h-12 mx-auto rounded-full bg-indigo-100 text-indigo-700 font-extrabold flex items-center justify-center text-lg">2</div>
+            <h3 class="font-bold text-slate-900 text-base">Scan UPI & Submit UTR</h3>
+            <p class="text-xs text-slate-600 leading-relaxed">Scan the dynamic UPI QR code on GPay / PhonePe / Paytm and enter your 12-digit transaction reference number.</p>
+          </div>
+
+          <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200/80 text-center space-y-3">
+            <div class="w-12 h-12 mx-auto rounded-full bg-amber-100 text-amber-700 font-extrabold flex items-center justify-center text-lg">3</div>
+            <h3 class="font-bold text-slate-900 text-base">Desk Verification & Pickup</h3>
+            <p class="text-xs text-slate-600 leading-relaxed">The team verifies your payment receipt on their dashboard and your order is ready with Token number!</p>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ====================================================================
+         VIEW 2: CUSTOMER REGISTRATION & STALL PASS
+         ==================================================================== -->
+    <section id="view-pass" class="view-section space-y-6">
+      
+      <div class="max-w-2xl mx-auto space-y-6">
+        
+        <!-- Header -->
+        <div class="text-center space-y-2">
+          <h2 class="text-3xl font-bold text-slate-900">Customer Stall Pass & QR</h2>
+          <p class="text-sm text-slate-600">Register once to get your official digital fest badge and fast-track stall checkout.</p>
+        </div>
+
+        <!-- Registration / Login Card (Shown if not logged in or switching) -->
+        <div id="customer-auth-card" class="glass-card p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-md">
+          <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-100">
+            <div>
+              <h3 class="font-bold text-slate-900 text-lg" id="auth-form-title">Customer Registration</h3>
+              <p class="text-xs text-slate-500">Quick 30-second sign up for college fest</p>
+            </div>
+            <button onclick="App.toggleAuthMode()" id="auth-toggle-btn" class="text-xs font-semibold text-brand-600 hover:text-brand-700 bg-brand-50 px-3 py-1.5 rounded-lg">
+              Existing User? Login
+            </button>
+          </div>
+
+          <form id="customer-auth-form" onsubmit="App.handleCustomerAuth(event)" class="space-y-4">
+            
+            <div id="auth-name-group">
+              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Full Name *</label>
+              <div class="relative">
+                <i class="fa-solid fa-user absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
+                <input type="text" id="reg-name" placeholder="e.g. Rahul Sharma" class="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white" required>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">10-Digit Mobile Number *</label>
+              <div class="relative">
+                <span class="absolute left-3.5 top-2.5 text-sm font-semibold text-slate-400">+91</span>
+                <input type="tel" id="reg-phone" maxlength="10" placeholder="9876543210" pattern="[0-9]{10}" class="w-full pl-14 pr-4 py-2.5 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white" required>
+              </div>
+              <p class="text-[11px] text-slate-500 mt-1">Used to identify your orders and tokens at the pickup desk.</p>
+            </div>
+
+            <div id="auth-college-group">
+              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">College / Department / Batch (Optional)</label>
+              <div class="relative">
+                <i class="fa-solid fa-graduation-cap absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
+                <input type="text" id="reg-college" placeholder="e.g. CSE 3rd Year / Visitor" class="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white">
+              </div>
+            </div>
+
+            <button type="submit" id="auth-submit-btn" class="w-full py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm shadow-md shadow-brand-600/30 transition-all flex items-center justify-center gap-2">
+              <i class="fa-solid fa-id-card"></i> Register & Generate Stall Pass
+            </button>
+
+          </form>
+        </div>
+
+        <!-- Digital Stall Pass Card (Shown when logged in) -->
+        <div id="customer-pass-card" class="space-y-4 hidden">
+          
+          <div class="stall-pass-gradient text-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-indigo-400/30 relative overflow-hidden">
+            <!-- Top Pass Bar -->
+            <div class="flex items-center justify-between border-b border-white/20 pb-4 mb-6">
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center text-amber-300 text-sm font-bold">
+                  <i class="fa-solid fa-certificate"></i>
+                </div>
+                <div>
+                  <h4 class="font-bold text-base tracking-tight leading-tight">ENTREPRENEUR CLUB</h4>
+                  <p class="text-[10px] text-emerald-300 tracking-wider font-semibold uppercase">Official Stall Guest Pass</p>
+                </div>
+              </div>
+              <span class="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 text-[11px] font-bold tracking-wider">
+                ACTIVE
+              </span>
+            </div>
+
+            <!-- Pass Body -->
+            <div class="grid sm:grid-cols-2 gap-6 items-center">
+              
+              <div class="space-y-3">
+                <div>
+                  <span class="text-[11px] text-slate-300 uppercase tracking-wider">Customer Name</span>
+                  <h3 class="text-xl font-extrabold text-white" id="pass-name">--</h3>
+                </div>
+
+                <div>
+                  <span class="text-[11px] text-slate-300 uppercase tracking-wider">Phone Number</span>
+                  <p class="text-sm font-mono text-emerald-200" id="pass-phone">+91 --</p>
+                </div>
+
+                <div>
+                  <span class="text-[11px] text-slate-300 uppercase tracking-wider">Unique Customer ID</span>
+                  <p class="text-base font-mono-code font-bold text-amber-300" id="pass-id">SP-CUST----</p>
+                </div>
+
+                <div>
+                  <span class="text-[11px] text-slate-300 uppercase tracking-wider">College / Affiliation</span>
+                  <p class="text-xs text-slate-200" id="pass-college">--</p>
+                </div>
+              </div>
+
+              <!-- Pass QR Code Container -->
+              <div class="bg-white p-4 rounded-2xl flex flex-col items-center justify-center shadow-lg text-slate-800">
+                <div id="pass-qr-container" class="w-[180px] h-[180px] flex items-center justify-center"></div>
+                <p class="text-[10px] font-bold text-slate-500 mt-2 uppercase tracking-wider">Scan at counter to identify</p>
+              </div>
+
+            </div>
+
+            <!-- Bottom Pass Bar -->
+            <div class="mt-6 pt-4 border-t border-white/20 flex items-center justify-between text-[11px] text-slate-300">
+              <span>Fest Edition 2026</span>
+              <span class="font-mono-code">StallPay Secure Pass</span>
+            </div>
+          </div>
+
+          <!-- Pass Actions -->
+          <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
+            <button onclick="App.showView('menu')" class="px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-xs shadow-sm flex items-center gap-2">
+              <i class="fa-solid fa-utensils"></i> Order with This Pass
+            </button>
+            <div class="flex items-center gap-2">
+              <button onclick="App.showSwitchAccount()" class="px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold">
+                <i class="fa-solid fa-arrows-rotate mr-1"></i> Switch Account
+              </button>
+              <button onclick="App.logoutCustomer()" class="px-3.5 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold">
+                <i class="fa-solid fa-arrow-right-from-bracket mr-1"></i> Logout
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ====================================================================
+         VIEW 3: STALL MENU & ORDER CART
+         ==================================================================== -->
+    <section id="view-menu" class="view-section space-y-6">
+      
+      <!-- Menu Header & Filters -->
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-slate-200">
+        <div>
+          <h2 class="text-2xl sm:text-3xl font-bold text-slate-900">Stall Menu & Catalog</h2>
+          <p class="text-xs sm:text-sm text-slate-500">Pick fresh bites, chilled shakes & student club merchandise.</p>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="relative w-full md:w-72">
+          <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-xs"></i>
+          <input type="text" id="menu-search-input" oninput="App.filterProducts()" placeholder="Search momos, coffee, nachos..." class="w-full pl-9 pr-4 py-2 text-xs rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white">
+        </div>
+      </div>
+
+      <!-- Category Filter Pills -->
+      <div class="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar" id="category-pills">
+        <button onclick="App.setCategoryFilter('all')" class="category-pill active px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap bg-brand-600 text-white shadow-sm" data-category="all">
+          All Items
+        </button>
+        <button onclick="App.setCategoryFilter('Snacks')" class="category-pill px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap bg-white text-slate-600 hover:bg-slate-100 border border-slate-200" data-category="Snacks">
+          🥟 Snacks & Bites
+        </button>
+        <button onclick="App.setCategoryFilter('Beverages')" class="category-pill px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap bg-white text-slate-600 hover:bg-slate-100 border border-slate-200" data-category="Beverages">
+          🧋 Shakes & Mocktails
+        </button>
+        <button onclick="App.setCategoryFilter('Desserts')" class="category-pill px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap bg-white text-slate-600 hover:bg-slate-100 border border-slate-200" data-category="Desserts">
+          🍨 Desserts
+        </button>
+        <button onclick="App.setCategoryFilter('Merch')" class="category-pill px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap bg-white text-slate-600 hover:bg-slate-100 border border-slate-200" data-category="Merch">
+          🎨 E-Club Merch
+        </button>
+      </div>
+
+      <!-- Products Grid -->
+      <div id="products-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+        <!-- Injected dynamically by app.js -->
+      </div>
+
+      <!-- Floating Bottom Cart Bar for Quick Mobile Access -->
+      <div id="floating-cart-bar" class="fixed bottom-20 md:bottom-6 left-4 right-4 max-w-lg mx-auto z-30 transition-all transform translate-y-32 opacity-0 pointer-events-none">
+        <div class="glass-header bg-slate-900/95 text-white p-3.5 rounded-2xl shadow-2xl border border-slate-700/60 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-brand-500 text-white flex items-center justify-center font-bold text-sm">
+              <span id="floating-cart-count">0</span>
+            </div>
+            <div>
+              <p class="text-xs text-slate-300 leading-tight">Order Total</p>
+              <h4 class="text-base font-extrabold text-white" id="floating-cart-total">₹0</h4>
+            </div>
+          </div>
+          <button onclick="App.openCartModal()" class="px-5 py-2.5 rounded-xl bg-brand-500 hover:bg-brand-400 text-slate-950 font-bold text-xs shadow-md transition-all flex items-center gap-1.5">
+            View Cart & Pay <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ====================================================================
+         VIEW 4: UPI PAYMENT & CHECKOUT
+         ==================================================================== -->
+    <section id="view-checkout" class="view-section space-y-6">
+      
+      <div class="max-w-2xl mx-auto space-y-6">
+        
+        <!-- Header -->
+        <div class="flex items-center justify-between">
+          <button onclick="App.showView('menu')" class="text-xs font-semibold text-slate-600 hover:text-slate-900 flex items-center gap-1.5">
+            <i class="fa-solid fa-arrow-left"></i> Back to Menu
+          </button>
+          <span class="text-xs font-bold uppercase tracking-wider text-brand-600">StallPay Checkout</span>
+        </div>
+
+        <!-- Checkout Card -->
+        <div class="glass-card p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-xl space-y-6">
+          
+          <!-- Order Summary Header -->
+          <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+            <div>
+              <h3 class="text-xl font-bold text-slate-900">UPI Payment & Verification</h3>
+              <p class="text-xs text-slate-500">Scan QR with any UPI app, then enter the UTR below.</p>
+            </div>
+            <div class="text-right">
+              <span class="text-[11px] text-slate-400 font-medium">Payable Amount</span>
+              <div class="text-2xl font-extrabold text-brand-700" id="checkout-total-amount">₹0</div>
+            </div>
+          </div>
+
+          <!-- Customer Identity Preview -->
+          <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between text-xs">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center font-bold">
+                <i class="fa-solid fa-user"></i>
+              </div>
+              <div>
+                <span class="font-bold text-slate-800" id="checkout-customer-name">--</span>
+                <span class="text-slate-500 block text-[11px]" id="checkout-customer-phone">+91 --</span>
+              </div>
+            </div>
+            <button onclick="App.showView('pass')" class="text-brand-600 hover:underline font-semibold text-[11px]">
+              Change User
+            </button>
+          </div>
+
+          <!-- Items Ordered Mini Breakdown -->
+          <div class="space-y-1.5">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Order Items</label>
+            <div id="checkout-items-list" class="divide-y divide-slate-100 max-h-36 overflow-y-auto text-xs text-slate-700 pr-1">
+              <!-- Injected dynamically -->
+            </div>
+          </div>
+
+          <!-- Step 1: Scan UPI QR -->
+          <div class="space-y-3">
+            <div class="flex items-center gap-2">
+              <span class="w-5 h-5 rounded-full bg-brand-600 text-white text-[10px] font-bold flex items-center justify-center">1</span>
+              <h4 class="font-bold text-slate-900 text-sm">Scan UPI Payment QR Code</h4>
+            </div>
+
+            <!-- QR Code Box -->
+            <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-col items-center justify-center text-center">
+              <div id="payment-qr-container" class="w-[230px] h-[230px] flex items-center justify-center bg-slate-50 rounded-xl"></div>
+              
+              <!-- UPI ID & Copy button -->
+              <div class="mt-4 flex items-center gap-2 bg-slate-100 px-3.5 py-1.5 rounded-full text-xs">
+                <span class="text-slate-500">Stall UPI ID:</span>
+                <strong class="text-slate-900 font-mono-code" id="checkout-upi-id">stallpay.ecell@upi</strong>
+                <button onclick="App.copyUpiId()" class="text-brand-600 hover:text-brand-700 ml-1" title="Copy UPI ID">
+                  <i class="fa-solid fa-copy"></i>
+                </button>
+              </div>
+
+              <!-- Quick App Launch Buttons for Mobile -->
+              <div class="mt-4 w-full pt-3 border-t border-slate-100">
+                <p class="text-[11px] text-slate-500 mb-2">Or open directly on your mobile device:</p>
+                <div class="grid grid-cols-3 gap-2">
+                  <a id="intent-gpay" href="#" class="py-2 px-1 text-center rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-[11px] font-bold transition-colors">
+                    <i class="fa-brands fa-google-pay text-base mr-1 text-blue-600"></i> GPay
+                  </a>
+                  <a id="intent-phonepe" href="#" class="py-2 px-1 text-center rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-800 text-[11px] font-bold transition-colors">
+                    <i class="fa-solid fa-mobile-screen mr-1 text-purple-600"></i> PhonePe
+                  </a>
+                  <a id="intent-paytm" href="#" class="py-2 px-1 text-center rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-800 text-[11px] font-bold transition-colors">
+                    <i class="fa-solid fa-wallet mr-1 text-sky-600"></i> Paytm
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 2: Enter UTR Reference Form -->
+          <form id="checkout-utr-form" onsubmit="App.handleUtrSubmission(event)" class="space-y-4 pt-2 border-t border-slate-100">
+            
+            <div class="flex items-center gap-2">
+              <span class="w-5 h-5 rounded-full bg-brand-600 text-white text-[10px] font-bold flex items-center justify-center">2</span>
+              <h4 class="font-bold text-slate-900 text-sm">Enter UPI Transaction Reference (UTR) *</h4>
+            </div>
+
+            <div>
+              <div class="relative">
+                <i class="fa-solid fa-receipt absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
+                <input type="text" id="checkout-utr-input" placeholder="e.g. 401928374651 (12 digits)" class="w-full pl-10 pr-4 py-3 text-sm font-mono-code rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white" required>
+              </div>
+              <p class="text-[11px] text-slate-500 mt-1.5 flex items-center gap-1">
+                <i class="fa-solid fa-circle-info text-brand-600"></i>
+                Find the 12-digit UPI Ref / UTR number in your payment receipt inside GPay, PhonePe, or Paytm.
+              </p>
+            </div>
+
+            <!-- Optional Cooking / Preparation Notes -->
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1">Special Notes for Stall Chef (Optional)</label>
+              <input type="text" id="checkout-notes-input" placeholder="e.g. Extra spicy / less sugar / no onions" class="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white">
+            </div>
+
+            <!-- CRITICAL SECURITY NOTICE -->
+            <div class="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs space-y-1">
+              <div class="flex items-center gap-2 font-bold text-amber-800">
+                <i class="fa-solid fa-shield-halved text-amber-600"></i>
+                Security & Payment Verification Policy
+              </div>
+              <p class="text-[11px] text-amber-700 leading-relaxed">
+                StallPay <strong>never</strong> asks for your UPI PIN or banking password. Upon submission, your order is kept in <strong>PENDING</strong> status until our stall desk verifies the UTR against our bank notification.
+              </p>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" id="btn-submit-payment" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-brand-600 to-emerald-500 hover:from-brand-700 hover:to-emerald-600 text-white font-bold text-sm shadow-lg shadow-brand-600/30 transition-all flex items-center justify-center gap-2">
+              <i class="fa-solid fa-check-circle"></i> Submit Payment for Verification
+            </button>
+
+          </form>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ====================================================================
+         VIEW 5: ORDER CONFIRMATION & LIVE VERIFICATION STATUS
+         ==================================================================== -->
+    <section id="view-confirmation" class="view-section space-y-6">
+      
+      <div class="max-w-xl mx-auto space-y-6">
+        
+        <!-- Live Status Card -->
+        <div class="glass-card p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-xl space-y-6 text-center">
+          
+          <!-- Token Callout Number -->
+          <div class="inline-block px-6 py-3 rounded-2xl bg-slate-900 text-white shadow-lg">
+            <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400 block">YOUR ORDER TOKEN</span>
+            <span class="text-4xl sm:text-5xl font-extrabold font-mono-code text-amber-400" id="conf-order-token">#000</span>
+          </div>
+
+          <!-- Dynamic Status Banner (PENDING / VERIFIED / REJECTED) -->
+          <div id="conf-status-banner" class="p-5 rounded-2xl bg-amber-50 border-2 border-amber-300 text-amber-900 space-y-2 pending-pulse-badge">
+            <div class="flex items-center justify-center gap-2 font-bold text-base text-amber-800">
+              <i class="fa-solid fa-hourglass-half text-amber-600 animate-spin"></i>
+              Payment Pending Team Verification
+            </div>
+            <p class="text-xs text-amber-700 leading-relaxed" id="conf-status-desc">
+              Your transaction reference (UTR) has been submitted. Please show Token <strong id="conf-token-inline">#000</strong> at the stall pickup desk. As soon as the team confirms receipt, this screen updates automatically!
+            </p>
+          </div>
+
+          <!-- Order Receipt Details -->
+          <div class="text-left bg-slate-50 p-4 rounded-2xl border border-slate-200 text-xs space-y-2.5">
+            <div class="flex justify-between pb-2 border-b border-slate-200">
+              <span class="text-slate-500 font-medium">Transaction ID:</span>
+              <span class="font-mono-code font-bold text-slate-800" id="conf-txn-id">TXN-----</span>
+            </div>
+            <div class="flex justify-between pb-2 border-b border-slate-200">
+              <span class="text-slate-500 font-medium">Customer:</span>
+              <span class="font-bold text-slate-800" id="conf-customer-name">--</span>
+            </div>
+            <div class="flex justify-between pb-2 border-b border-slate-200">
+              <span class="text-slate-500 font-medium">Submitted UTR:</span>
+              <span class="font-mono-code text-slate-800" id="conf-utr">--</span>
+            </div>
+            <div class="flex justify-between pb-2 border-b border-slate-200">
+              <span class="text-slate-500 font-medium">Date & Time:</span>
+              <span class="text-slate-800" id="conf-datetime">--</span>
+            </div>
+
+            <!-- Items -->
+            <div class="pt-1">
+              <span class="text-slate-500 font-medium block mb-1">Items Ordered:</span>
+              <div id="conf-items-list" class="space-y-1 text-slate-800 font-medium">
+                <!-- Injected dynamically -->
+              </div>
+            </div>
+
+            <!-- Total -->
+            <div class="flex justify-between pt-2 border-t border-slate-200 font-bold text-sm text-slate-900">
+              <span>Total Paid:</span>
+              <span class="text-brand-700" id="conf-total-amount">₹0</span>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
+            <button onclick="App.printReceipt()" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold flex items-center gap-1.5 transition-colors">
+              <i class="fa-solid fa-print"></i> Print Receipt
+            </button>
+            <button onclick="App.showView('menu')" class="px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold shadow-sm transition-colors">
+              Order More Items
+            </button>
+            <button onclick="App.showView('feedback')" class="px-4 py-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-semibold border border-amber-200 transition-colors">
+              <i class="fa-solid fa-star text-amber-500"></i> Leave Feedback
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ====================================================================
+         VIEW 6: CUSTOMER TRANSACTION HISTORY
+         ==================================================================== -->
+    <section id="view-history" class="view-section space-y-6">
+      
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200">
+        <div>
+          <h2 class="text-2xl sm:text-3xl font-bold text-slate-900">Transaction History</h2>
+          <p class="text-xs sm:text-sm text-slate-500">View real-time status of all your orders & tokens.</p>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl text-xs font-semibold">
+          <button onclick="App.filterHistory('all')" class="history-tab active px-3 py-1.5 rounded-lg bg-white shadow-sm text-slate-800" data-filter="all">All</button>
+          <button onclick="App.filterHistory('pending')" class="history-tab px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900" data-filter="pending">⏳ Pending</button>
+          <button onclick="App.filterHistory('verified')" class="history-tab px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900" data-filter="verified">✅ Verified</button>
+        </div>
+      </div>
+
+      <!-- Transactions List -->
+      <div id="history-transactions-list" class="space-y-4">
+        <!-- Injected dynamically -->
+      </div>
+
+    </section>
+
+    <!-- ====================================================================
+         VIEW 7: TEAM LOGIN & MANAGEMENT DASHBOARD
+         ==================================================================== -->
+    <section id="view-team-dashboard" class="view-section space-y-6">
+      
+      <!-- Team PIN Login Gate (Shown when not authed) -->
+      <div id="team-pin-gate" class="max-w-md mx-auto py-10">
+        <div class="glass-card p-8 rounded-3xl border border-slate-200 shadow-xl text-center space-y-6">
+          
+          <div class="w-16 h-16 mx-auto rounded-3xl bg-slate-900 text-amber-400 flex items-center justify-center text-3xl shadow-lg">
+            <i class="fa-solid fa-lock"></i>
+          </div>
+
+          <div>
+            <h3 class="text-2xl font-bold text-slate-900">Team Desk Login</h3>
+            <p class="text-xs text-slate-500 mt-1">Authorized access for Entrepreneur Club stall coordinators.</p>
+          </div>
+
+          <form onsubmit="App.handleTeamPinSubmit(event)" class="space-y-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Enter 4-Digit Team PIN</label>
+              <input type="password" id="team-pin-input" maxlength="8" placeholder="••••" class="w-48 mx-auto text-center py-3 text-2xl font-mono tracking-widest rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 bg-white" required autofocus>
+              <p class="text-[11px] text-slate-400 mt-2">Default PIN: <strong class="text-slate-600">1234</strong> (Changeable in settings)</p>
+            </div>
+
+            <button type="submit" class="w-full py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm shadow-md transition-all">
+              Unlock Team Dashboard
+            </button>
+          </form>
+
+        </div>
+      </div>
+
+      <!-- Authenticated Team Dashboard (Shown when authed) -->
+      <div id="team-authenticated-area" class="space-y-6 hidden">
+        
+        <!-- Dashboard Top Header Bar -->
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-2 border-b border-slate-200">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-slate-900 text-amber-400 flex items-center justify-center text-lg">
+              <i class="fa-solid fa-gauge-high"></i>
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h2 class="text-2xl font-bold text-slate-900">Stall Operations Desk</h2>
+                <span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold">ONLINE</span>
+              </div>
+              <p class="text-xs text-slate-500">Live payment verification, inventory & profit accounting.</p>
+            </div>
+          </div>
+
+          <!-- Top Action Controls -->
+          <div class="flex flex-wrap items-center gap-2">
+            <button onclick="App.openScannerModal()" class="px-3.5 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm">
+              <i class="fa-solid fa-camera"></i> Scan Token / QR
+            </button>
+            <button onclick="App.openSupabaseConfigModal()" class="px-3.5 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-semibold flex items-center gap-1.5 border border-emerald-300 shadow-sm transition-all" title="Configure Supabase Database">
+              <i class="fa-solid fa-database text-emerald-600"></i> <span id="team-supabase-sync-label">Supabase Sync</span>
+            </button>
+            <button onclick="App.openFirebaseConfigModal()" class="px-3 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-semibold flex items-center gap-1.5 border border-indigo-200">
+              <i class="fa-solid fa-cloud"></i> <span id="team-cloud-sync-label">Firebase</span>
+            </button>
+            <button onclick="App.logoutTeam()" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-rose-50 text-slate-600 hover:text-rose-600 text-xs font-semibold">
+              <i class="fa-solid fa-lock mr-1"></i> Lock Desk
+            </button>
+          </div>
+        </div>
+
+        <!-- Real-Time Financial Metric Cards -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          
+          <!-- Gross Verified Sales -->
+          <div class="glass-card p-4 rounded-2xl border border-slate-200 bg-white">
+            <div class="flex items-center justify-between text-xs text-slate-500 font-medium mb-1">
+              <span>Verified Sales</span>
+              <span class="text-emerald-600 font-bold" id="dash-orders-verified-count">0 orders</span>
+            </div>
+            <h3 class="text-2xl font-extrabold text-emerald-600" id="dash-verified-sales">₹0</h3>
+            <p class="text-[10px] text-slate-400 mt-1">Confirmed bank payments</p>
+          </div>
+
+          <!-- Pending Verification Sales -->
+          <div class="glass-card p-4 rounded-2xl border border-slate-200 bg-white">
+            <div class="flex items-center justify-between text-xs text-slate-500 font-medium mb-1">
+              <span>Pending Queue</span>
+              <span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[10px] font-bold" id="dash-pending-count">0 pending</span>
+            </div>
+            <h3 class="text-2xl font-extrabold text-amber-500" id="dash-pending-sales">₹0</h3>
+            <p class="text-[10px] text-slate-400 mt-1">Awaiting desk approval</p>
+          </div>
+
+          <!-- Stall Expenses Recorded -->
+          <div class="glass-card p-4 rounded-2xl border border-slate-200 bg-white">
+            <div class="flex items-center justify-between text-xs text-slate-500 font-medium mb-1">
+              <span>Recorded Expenses</span>
+              <span class="text-rose-600 font-bold" id="dash-expense-count">0 entries</span>
+            </div>
+            <h3 class="text-2xl font-extrabold text-rose-600" id="dash-total-expenses">₹0</h3>
+            <p class="text-[10px] text-slate-400 mt-1">Ingredients, gas, prints, setup</p>
+          </div>
+
+          <!-- Net Club Profit -->
+          <div class="glass-card p-4 rounded-2xl border border-slate-200 bg-white">
+            <div class="flex items-center justify-between text-xs text-slate-500 font-medium mb-1">
+              <span>Net Club Profit</span>
+              <span class="text-indigo-600 font-bold" id="dash-profit-margin">0% margin</span>
+            </div>
+            <h3 class="text-2xl font-extrabold text-indigo-700" id="dash-net-profit">₹0</h3>
+            <p class="text-[10px] text-slate-400 mt-1">Sales minus Expenses</p>
+          </div>
+
+        </div>
+
+        <!-- Team Dashboard Subtabs -->
+        <div class="flex items-center gap-2 overflow-x-auto pb-1 border-b border-slate-200 text-xs font-bold" id="team-subtabs">
+          <button onclick="App.showTeamSubtab('verify')" class="team-subtab-btn active px-4 py-2.5 rounded-t-xl bg-white border-t border-x border-slate-200 text-brand-700 shadow-sm" data-subtab="verify">
+            <i class="fa-solid fa-hourglass-half mr-1.5 text-amber-500"></i> Verify Payments (<span id="tab-pending-badge">0</span>)
+          </button>
+          <button onclick="App.showTeamSubtab('inventory')" class="team-subtab-btn px-4 py-2.5 rounded-t-xl text-slate-600 hover:text-slate-900" data-subtab="inventory">
+            <i class="fa-solid fa-boxes-stacked mr-1.5"></i> Products & Stock
+          </button>
+          <button onclick="App.showTeamSubtab('expenses')" class="team-subtab-btn px-4 py-2.5 rounded-t-xl text-slate-600 hover:text-slate-900" data-subtab="expenses">
+            <i class="fa-solid fa-receipt mr-1.5"></i> Expenses & Profit
+          </button>
+          <button onclick="App.showTeamSubtab('all-transactions')" class="team-subtab-btn px-4 py-2.5 rounded-t-xl text-slate-600 hover:text-slate-900" data-subtab="all-transactions">
+            <i class="fa-solid fa-list-check mr-1.5"></i> All Transactions
+          </button>
+          <button onclick="App.showTeamSubtab('settings')" class="team-subtab-btn px-4 py-2.5 rounded-t-xl text-slate-600 hover:text-slate-900" data-subtab="settings">
+            <i class="fa-solid fa-gear mr-1.5"></i> Stall Settings
+          </button>
+        </div>
+
+        <!-- SUBTAB 1: LIVE PAYMENT VERIFICATION QUEUE -->
+        <div id="subtab-verify" class="team-subtab-content space-y-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <h3 class="font-bold text-slate-900 text-base">Pending UPI Payments Queue</h3>
+              <span class="text-xs text-slate-500">(Auto-refreshes in real-time)</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs text-slate-500">Search UTR/Phone:</span>
+              <input type="text" id="verify-search-input" oninput="App.renderVerificationQueue()" placeholder="Type to filter..." class="px-3 py-1.5 text-xs rounded-xl border border-slate-200 bg-white">
+            </div>
+          </div>
+
+          <div id="verification-queue-container" class="space-y-3">
+            <!-- Injected dynamically -->
+          </div>
+        </div>
+
+        <!-- SUBTAB 2: PRODUCT & INVENTORY MANAGEMENT -->
+        <div id="subtab-inventory" class="team-subtab-content space-y-4 hidden">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="font-bold text-slate-900 text-base">Stall Products & Prices</h3>
+              <p class="text-xs text-slate-500">Toggle out-of-stock items, adjust prices, or add new items.</p>
+            </div>
+            <button onclick="App.openAddProductModal()" class="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm">
+              <i class="fa-solid fa-plus"></i> Add New Product
+            </button>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 text-slate-500 uppercase font-bold border-b border-slate-200">
+                  <tr>
+                    <th class="px-4 py-3">Product</th>
+                    <th class="px-4 py-3">Category</th>
+                    <th class="px-4 py-3">Price</th>
+                    <th class="px-4 py-3">Stock Status</th>
+                    <th class="px-4 py-3 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="inventory-table-body" class="divide-y divide-slate-100">
+                  <!-- Injected dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- SUBTAB 3: EXPENSES & PROFIT CALCULATOR -->
+        <div id="subtab-expenses" class="team-subtab-content space-y-4 hidden">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h3 class="font-bold text-slate-900 text-base">Expense Records & Net Profit</h3>
+              <p class="text-xs text-slate-500">Log all raw materials, stall rent, ice, packaging to calculate real club earnings.</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="App.openAddExpenseModal()" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm">
+                <i class="fa-solid fa-plus"></i> Record Expense
+              </button>
+              <button onclick="App.exportExpensesCSV()" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold">
+                <i class="fa-solid fa-file-csv mr-1"></i> Export CSV
+              </button>
+            </div>
+          </div>
+
+          <!-- Profit Breakdown Banner -->
+          <div class="p-5 rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="space-y-1">
+              <span class="text-xs uppercase tracking-wider text-emerald-400 font-bold">Live Net Profit Formula</span>
+              <p class="text-sm text-slate-300">
+                Total Verified Sales (<span id="calc-sales-label" class="text-emerald-400 font-bold">₹0</span>) − Total Stall Expenses (<span id="calc-exp-label" class="text-rose-400 font-bold">₹0</span>)
+              </p>
+            </div>
+            <div class="text-right">
+              <span class="text-xs text-slate-400 block">Club Net Balance</span>
+              <h3 class="text-3xl font-extrabold text-amber-400 font-mono-code" id="calc-net-profit-badge">₹0</h3>
+            </div>
+          </div>
+
+          <!-- Expenses Table -->
+          <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 text-slate-500 uppercase font-bold border-b border-slate-200">
+                  <tr>
+                    <th class="px-4 py-3">Title / Description</th>
+                    <th class="px-4 py-3">Category</th>
+                    <th class="px-4 py-3">Amount</th>
+                    <th class="px-4 py-3">Date</th>
+                    <th class="px-4 py-3">Notes</th>
+                    <th class="px-4 py-3 text-right">Delete</th>
+                  </tr>
+                </thead>
+                <tbody id="expenses-table-body" class="divide-y divide-slate-100">
+                  <!-- Injected dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- SUBTAB 4: ALL TRANSACTIONS LOG -->
+        <div id="subtab-all-transactions" class="team-subtab-content space-y-4 hidden">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h3 class="font-bold text-slate-900 text-base">Complete Fest Transactions Log</h3>
+              <p class="text-xs text-slate-500">Search and audit every order submitted through StallPay.</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="App.exportTransactionsCSV()" class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm">
+                <i class="fa-solid fa-file-csv text-emerald-400"></i> Export All Transactions CSV
+              </button>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 text-slate-500 uppercase font-bold border-b border-slate-200">
+                  <tr>
+                    <th class="px-4 py-3">Token</th>
+                    <th class="px-4 py-3">Customer</th>
+                    <th class="px-4 py-3">Items</th>
+                    <th class="px-4 py-3">Amount</th>
+                    <th class="px-4 py-3">Status</th>
+                    <th class="px-4 py-3">UTR Reference</th>
+                    <th class="px-4 py-3">Time</th>
+                    <th class="px-4 py-3 text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="all-transactions-table-body" class="divide-y divide-slate-100">
+                  <!-- Injected dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- SUBTAB 5: STALL & UPI SETTINGS -->
+        <div id="subtab-settings" class="team-subtab-content space-y-6 hidden">
+          <div class="max-w-xl space-y-6">
+            <div>
+              <h3 class="font-bold text-slate-900 text-base">Stall & Payment Configuration</h3>
+              <p class="text-xs text-slate-500">Update UPI ID, Payee Name, or Team Access PIN.</p>
+            </div>
+
+            <form onsubmit="App.handleSaveSettings(event)" class="glass-card p-6 rounded-3xl border border-slate-200 space-y-4">
+              <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Stall / Club Name</label>
+                <input type="text" id="set-stall-name" class="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white" required>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Event Name</label>
+                <input type="text" id="set-event-name" class="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white" required>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Stall UPI VPA (ID) *</label>
+                <input type="text" id="set-upi-id" placeholder="e.g. yourname@oksbi / stallpay.ecell@upi" class="w-full px-3.5 py-2 text-xs font-mono-code rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white" required>
+                <p class="text-[11px] text-slate-500 mt-1">This UPI ID is embedded in all customer payment QR codes.</p>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Payee Name (as registered in Bank / UPI)</label>
+                <input type="text" id="set-payee-name" class="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white" required>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Team Access PIN</label>
+                <input type="password" id="set-team-pin" maxlength="8" class="w-full px-3.5 py-2 text-xs font-mono tracking-widest rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white" required>
+              </div>
+
+              <button type="submit" class="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-sm transition-all">
+                Save Stall Settings
+              </button>
+            </form>
+
+            <!-- Dangerous Zone -->
+            <div class="p-5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-900 space-y-2">
+              <h4 class="font-bold text-xs uppercase tracking-wider text-rose-800">Reset Stall Event Data</h4>
+              <p class="text-[11px] text-rose-700">Wipe demo transactions, expenses, and reset to default fest state.</p>
+              <button onclick="App.confirmResetAllData()" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition-all">
+                Reset All Event Data
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ====================================================================
+         VIEW 8: CUSTOMER FEEDBACK & REVIEWS
+         ==================================================================== -->
+    <section id="view-feedback" class="view-section space-y-8">
+      
+      <div class="max-w-3xl mx-auto space-y-8">
+        
+        <!-- Header -->
+        <div class="text-center space-y-2">
+          <span class="text-xs font-bold uppercase tracking-wider text-amber-500">Student Reviews & Wall</span>
+          <h2 class="text-3xl font-bold text-slate-900">Stall Experience & Feedback</h2>
+          <p class="text-xs sm:text-sm text-slate-500">Help the Entrepreneur Club improve! Rate your food and counter experience.</p>
+        </div>
+
+        <!-- Overall Rating Banner -->
+        <div class="glass-card p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-6">
+          <div class="flex items-center gap-4">
+            <div class="w-16 h-16 rounded-2xl bg-amber-500 text-slate-950 flex flex-col items-center justify-center font-extrabold">
+              <span class="text-2xl leading-none" id="overall-rating-num">5.0</span>
+              <span class="text-[10px] text-slate-900 uppercase font-bold">/ 5.0</span>
+            </div>
+            <div>
+              <div class="flex items-center text-amber-400 text-sm gap-1 mb-1">
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+              </div>
+              <p class="text-xs text-slate-600 font-medium">Based on <span id="overall-reviews-count" class="font-bold text-slate-900">0</span> verified customer reviews</p>
+            </div>
+          </div>
+
+          <button onclick="document.getElementById('feedback-form-card').scrollIntoView({ behavior: 'smooth' })" class="px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold shadow-sm transition-all">
+            Write a Review
+          </button>
+        </div>
+
+        <!-- Submit Feedback Form Card -->
+        <div id="feedback-form-card" class="glass-card p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-md space-y-4">
+          <h3 class="font-bold text-slate-900 text-base">Rate Your Stall Experience</h3>
+
+          <form onsubmit="App.handleFeedbackSubmit(event)" class="space-y-4">
+            
+            <!-- Star Rating Picker -->
+            <div>
+              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Overall Rating *</label>
+              <div class="flex items-center gap-2 text-2xl text-amber-400 star-rating" id="star-picker">
+                <i class="fa-solid fa-star" data-rating="1" onclick="App.setFormRating(1)"></i>
+                <i class="fa-solid fa-star" data-rating="2" onclick="App.setFormRating(2)"></i>
+                <i class="fa-solid fa-star" data-rating="3" onclick="App.setFormRating(3)"></i>
+                <i class="fa-solid fa-star" data-rating="4" onclick="App.setFormRating(4)"></i>
+                <i class="fa-solid fa-star" data-rating="5" onclick="App.setFormRating(5)"></i>
+                <span class="text-xs font-bold text-slate-600 ml-2" id="star-rating-label">5 Stars - Outstanding!</span>
+              </div>
+              <input type="hidden" id="form-rating-val" value="5">
+            </div>
+
+            <!-- Customer Name & Phone -->
+            <div class="grid sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-medium text-slate-700 mb-1">Your Name</label>
+                <input type="text" id="fb-customer-name" placeholder="Name" class="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white">
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-slate-700 mb-1">Phone Number (Optional)</label>
+                <input type="tel" id="fb-customer-phone" maxlength="10" placeholder="10-digit number" class="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white">
+              </div>
+            </div>
+
+            <!-- Tag Selector -->
+            <div>
+              <label class="block text-xs font-medium text-slate-700 mb-1.5">What did you like most?</label>
+              <div class="flex flex-wrap gap-2" id="feedback-tag-picker">
+                <button type="button" onclick="App.setFeedbackTag(this, 'Delicious Food')" class="fb-tag-btn active px-3 py-1.5 rounded-lg text-xs font-semibold bg-brand-50 text-brand-700 border border-brand-200">
+                  🍜 Delicious Food
+                </button>
+                <button type="button" onclick="App.setFeedbackTag(this, 'Super Fast')" class="fb-tag-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 border border-transparent">
+                  ⚡ Super Fast
+                </button>
+                <button type="button" onclick="App.setFeedbackTag(this, 'Great Value')" class="fb-tag-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 border border-transparent">
+                  💰 Great Value
+                </button>
+                <button type="button" onclick="App.setFeedbackTag(this, 'Friendly Crew')" class="fb-tag-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 border border-transparent">
+                  🤝 Friendly Crew
+                </button>
+                <button type="button" onclick="App.setFeedbackTag(this, 'Clean & Hygienic')" class="fb-tag-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 border border-transparent">
+                  ✨ Clean & Hygienic
+                </button>
+              </div>
+              <input type="hidden" id="form-feedback-tag" value="Delicious Food">
+            </div>
+
+            <!-- Comment -->
+            <div>
+              <label class="block text-xs font-medium text-slate-700 mb-1">Your Review / Compliment / Suggestion</label>
+              <textarea id="fb-comment" rows="3" placeholder="Tell us how you liked the cold coffee, momos or stall arrangement..." class="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white" required></textarea>
+            </div>
+
+            <button type="submit" class="w-full py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-md transition-all">
+              Submit Review & Rating
+            </button>
+          </form>
+        </div>
+
+        <!-- Public Reviews Wall -->
+        <div class="space-y-4">
+          <h3 class="font-bold text-slate-900 text-lg">Community Reviews</h3>
+          <div id="feedback-wall-container" class="grid sm:grid-cols-2 gap-4">
+            <!-- Injected dynamically -->
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ========================================================================
+       MOBILE BOTTOM NAVIGATION BAR
+       ======================================================================== -->
+  <nav class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/80 px-2 py-1 shadow-lg">
+    <div class="grid grid-cols-5 text-center">
+      <button onclick="App.showView('home')" class="mobile-nav-btn py-1.5 flex flex-col items-center text-slate-500 hover:text-brand-600" data-target="home">
+        <i class="fa-solid fa-house text-base"></i>
+        <span class="text-[10px] font-semibold mt-0.5">Home</span>
+      </button>
+      <button onclick="App.showView('menu')" class="mobile-nav-btn py-1.5 flex flex-col items-center text-slate-500 hover:text-brand-600" data-target="menu">
+        <i class="fa-solid fa-utensils text-base"></i>
+        <span class="text-[10px] font-semibold mt-0.5">Menu</span>
+      </button>
+      <button onclick="App.showView('pass')" class="mobile-nav-btn py-1.5 flex flex-col items-center text-slate-500 hover:text-brand-600" data-target="pass">
+        <i class="fa-solid fa-id-badge text-base"></i>
+        <span class="text-[10px] font-semibold mt-0.5">Pass</span>
+      </button>
+      <button onclick="App.showView('history')" class="mobile-nav-btn py-1.5 flex flex-col items-center text-slate-500 hover:text-brand-600" data-target="history">
+        <i class="fa-solid fa-clock-rotate-left text-base"></i>
+        <span class="text-[10px] font-semibold mt-0.5">Orders</span>
+      </button>
+      <button onclick="App.showView('team-dashboard')" class="mobile-nav-btn py-1.5 flex flex-col items-center text-slate-500 hover:text-brand-600" data-target="team-dashboard">
+        <i class="fa-solid fa-shield-halved text-base text-amber-500"></i>
+        <span class="text-[10px] font-semibold mt-0.5">Team</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ========================================================================
+       MODALS & DRAWERS
+       ======================================================================== -->
+
+  <!-- 1. CART DRAWER MODAL -->
+  <div id="cart-modal" class="modal-backdrop fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      
+      <!-- Drawer Header -->
+      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-bag-shopping text-brand-600 text-lg"></i>
+          <h3 class="font-bold text-slate-900 text-base">Your Stall Cart</h3>
+        </div>
+        <button onclick="App.closeCartModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Drawer Body Items -->
+      <div id="cart-drawer-items" class="p-6 overflow-y-auto space-y-3 flex-1 divide-y divide-slate-100">
+        <!-- Injected dynamically -->
+      </div>
+
+      <!-- Drawer Footer -->
+      <div class="p-6 border-t border-slate-100 bg-slate-50 space-y-3">
+        <div class="flex justify-between text-xs text-slate-500 font-medium">
+          <span>Stall Items Subtotal:</span>
+          <span id="cart-modal-subtotal" class="font-bold text-slate-800">₹0</span>
+        </div>
+        <div class="flex justify-between text-base font-extrabold text-slate-900">
+          <span>Total Payable:</span>
+          <span id="cart-modal-total" class="text-brand-600 text-xl font-mono-code">₹0</span>
+        </div>
+
+        <button onclick="App.proceedToCheckout()" id="btn-cart-checkout" class="w-full py-3.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm shadow-md shadow-brand-600/30 transition-all flex items-center justify-center gap-2">
+          Proceed to Pay via UPI <i class="fa-solid fa-qrcode"></i>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 2. SCANNER MODAL (CAMERA & FILE) -->
+  <div id="scanner-modal" class="modal-backdrop fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden p-6 space-y-4">
+      
+      <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-camera text-brand-600"></i>
+          <h3 class="font-bold text-slate-900 text-base">Stall QR Scanner</h3>
+        </div>
+        <button onclick="App.closeScannerModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <p class="text-xs text-slate-500">Scan customer stall pass, order token, or UPI QR code directly with camera or upload image.</p>
+
+      <!-- Video Scanner Container -->
+      <div id="qr-camera-viewport" class="w-full h-64 bg-slate-950 rounded-2xl overflow-hidden relative flex items-center justify-center text-white">
+        <!-- Html5Qrcode renders video here -->
+      </div>
+
+      <!-- File Upload Fallback -->
+      <div class="pt-2 flex items-center justify-between gap-2">
+        <label class="flex-1 py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold cursor-pointer text-center transition-colors">
+          <i class="fa-solid fa-image mr-1 text-slate-500"></i> Scan from Photo / File
+          <input type="file" id="qr-file-input" accept="image/*" class="hidden" onchange="App.handleQrFileUpload(event)">
+        </label>
+        <button onclick="App.closeScannerModal()" class="py-2.5 px-4 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-semibold">
+          Close
+        </button>
+      </div>
+
+      <div id="hidden-file-scanner" style="display:none;"></div>
+
+    </div>
+  </div>
+
+  <!-- 3. ADD PRODUCT MODAL -->
+  <div id="add-product-modal" class="modal-backdrop fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl p-6 space-y-4">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+        <h3 class="font-bold text-slate-900 text-base">Add New Product</h3>
+        <button onclick="App.closeAddProductModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form onsubmit="App.handleAddProduct(event)" class="space-y-3">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Product Name *</label>
+          <input type="text" id="new-prod-name" placeholder="e.g. Schezwan Fried Rice" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 bg-white" required>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Category</label>
+            <select id="new-prod-category" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 bg-white">
+              <option value="Snacks">Snacks</option>
+              <option value="Beverages">Beverages</option>
+              <option value="Desserts">Desserts</option>
+              <option value="Merch">Merch</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Price (₹) *</label>
+            <input type="number" id="new-prod-price" min="0" placeholder="60" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 bg-white" required>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Emoji Icon</label>
+            <input type="text" id="new-prod-emoji" placeholder="🍛" value="🍽️" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 bg-white">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Badge (Optional)</label>
+            <input type="text" id="new-prod-badge" placeholder="Special / Hot" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 bg-white">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Description</label>
+          <input type="text" id="new-prod-desc" placeholder="Ingredients, taste, quantity details" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 bg-white">
+        </div>
+
+        <button type="submit" class="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-sm">
+          Save Product to Menu
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 4. ADD EXPENSE MODAL -->
+  <div id="add-expense-modal" class="modal-backdrop fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl p-6 space-y-4">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+        <h3 class="font-bold text-slate-900 text-base">Record Stall Expense</h3>
+        <button onclick="App.closeAddExpenseModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form onsubmit="App.handleAddExpense(event)" class="space-y-3">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Expense Title *</label>
+          <input type="text" id="new-exp-title" placeholder="e.g. Milk & Coffee Powder wholesale" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 bg-white" required>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Category</label>
+            <select id="new-exp-category" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 bg-white">
+              <option value="Raw Materials">Raw Materials</option>
+              <option value="Packaging">Packaging</option>
+              <option value="Stall Setup">Stall Setup</option>
+              <option value="Beverages">Beverages</option>
+              <option value="Miscellaneous">Miscellaneous</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Amount (₹) *</label>
+            <input type="number" id="new-exp-amount" min="1" placeholder="450" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 bg-white" required>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Notes / Vendor</label>
+          <input type="text" id="new-exp-notes" placeholder="Invoice # or store name" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 bg-white">
+        </div>
+
+        <button type="submit" class="w-full py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-sm">
+          Save Expense Entry
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 5. FIREBASE CLOUD CONFIG MODAL -->
+  <div id="firebase-modal" class="modal-backdrop fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl p-6 space-y-4">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-cloud text-indigo-600"></i>
+          <h3 class="font-bold text-slate-900 text-base">Firebase Cloud Sync Configuration</h3>
+        </div>
+        <button onclick="App.closeFirebaseConfigModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <p class="text-xs text-slate-600 leading-relaxed">
+        Connect your free Firebase Firestore database so multiple phones (customers and stall desk) sync automatically over the internet.
+      </p>
+
+      <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+        <div class="flex items-center justify-between text-xs">
+          <span class="text-slate-500">Current Mode:</span>
+          <span id="fb-connection-status-pill" class="font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px]">Local & Broadcast Sync Active</span>
+        </div>
+      </div>
+
+      <form onsubmit="App.handleSaveFirebaseConfig(event)" class="space-y-3">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Paste Firebase Web Config (JSON format)</label>
+          <textarea id="fb-config-json" rows="6" placeholder='{
+  "apiKey": "AIzaSy...",
+  "authDomain": "stallpay.firebaseapp.com",
+  "projectId": "stallpay-fest",
+  "storageBucket": "stallpay-fest.appspot.com",
+  "messagingSenderId": "...",
+  "appId": "..."
+}' class="w-full p-3 text-[11px] font-mono-code rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-indigo-500"></textarea>
+        </div>
+
+        <div class="flex items-center justify-between gap-3 pt-2">
+          <button type="submit" class="flex-1 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-sm">
+            Save & Connect Cloud
+          </button>
+          <button type="button" onclick="App.disconnectFirebase()" class="py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs">
+            Reset to Local
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 5B. SUPABASE POSTGRESQL CONFIG MODAL -->
+  <div id="supabase-modal" class="modal-backdrop fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl p-6 space-y-4">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-database text-emerald-600 text-lg"></i>
+          <h3 class="font-bold text-slate-900 text-base">Supabase Database Connection</h3>
+        </div>
+        <button onclick="App.closeSupabaseConfigModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <p class="text-xs text-slate-600 leading-relaxed">
+        Connect your <strong>Supabase</strong> PostgreSQL project for real-time WebSocket subscriptions across customer phones and stall counters.
+      </p>
+
+      <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+        <div class="flex items-center justify-between text-xs">
+          <span class="text-slate-500 font-medium">Supabase Status:</span>
+          <span id="sb-connection-status-pill" class="font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[10px]">Checking...</span>
+        </div>
+        <p class="text-[11px] text-slate-500" id="sb-connected-url-preview">URL: Not connected</p>
+      </div>
+
+      <form onsubmit="App.handleSaveSupabaseConfig(event)" class="space-y-3">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Supabase Project URL *</label>
+          <input type="url" id="sb-input-url" placeholder="https://your-project-id.supabase.co" class="w-full px-3.5 py-2 text-xs font-mono-code rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-emerald-500" required>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Supabase Public Anon Key *</label>
+          <textarea id="sb-input-anon-key" rows="3" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." class="w-full p-2.5 text-xs font-mono-code rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-emerald-500" required></textarea>
+          <p class="text-[10px] text-slate-400 mt-1">Found in Supabase Console -> Project Settings -> API -> Project API keys (anon public).</p>
+        </div>
+
+        <div class="flex items-center justify-between gap-3 pt-2">
+          <button type="submit" class="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition-all flex items-center justify-center gap-1.5">
+            <i class="fa-solid fa-plug"></i> Connect Supabase
+          </button>
+          <button type="button" onclick="App.disconnectSupabase()" class="py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs">
+            Disconnect
+          </button>
+        </div>
+      </form>
+
+      <!-- SQL Schema Setup Helper -->
+      <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+        <span>Need database tables?</span>
+        <button onclick="App.showSchemaGuide()" class="text-emerald-600 font-semibold hover:underline">
+          View SQL Schema Script <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. PRINTABLE THERMAL RECEIPT AREA (Only visible when printing) -->
+  <div id="printable-receipt-area" class="hidden">
+    <div style="text-align: center; border-bottom: 1px dashed #000; padding-bottom: 8px; margin-bottom: 8px;">
+      <h3 style="margin: 0; font-size: 16px;">STALLPAY • E-CLUB STALL</h3>
+      <p style="margin: 2px 0; font-size: 11px;">College Fest 2026</p>
+      <h2 id="print-token" style="margin: 6px 0; font-size: 24px; font-weight: bold;">TOKEN #000</h2>
+      <p id="print-status" style="margin: 2px 0; font-size: 11px; font-weight: bold;">STATUS: PENDING</p>
+    </div>
+    <div style="font-size: 11px; margin-bottom: 8px;">
+      <div>Date: <span id="print-date">--</span></div>
+      <div>Customer: <span id="print-customer">--</span></div>
+      <div>UTR: <span id="print-utr">--</span></div>
+    </div>
+    <div style="border-top: 1px dashed #000; border-bottom: 1px dashed #000; padding: 6px 0; font-size: 11px;">
+      <div id="print-items-list"></div>
+    </div>
+    <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 13px; margin-top: 6px;">
+      <span>TOTAL PAID:</span>
+      <span id="print-total">₹0</span>
+    </div>
+    <div style="text-align: center; margin-top: 12px; font-size: 10px;">
+      <p>Thank you for supporting student entrepreneurship!</p>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="fixed top-20 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- Application Scripts -->
+  <script src="js/env-config.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/sound.js"></script>
+  <script src="js/supabase-service.js"></script>
+  <script src="js/firebase-service.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/upi-qr.js"></script>
+  <script src="js/qr-scanner.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>

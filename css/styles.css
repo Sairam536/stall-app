@@ -1,0 +1,173 @@
+/* ==========================================================================
+   StallPay - College Stall Management System Styling
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --primary: #059669;      /* Emerald 600 */
+  --primary-hover: #047857;
+  --secondary: #4f46e5;    /* Indigo 600 */
+  --accent: #f59e0b;       /* Amber 500 */
+  --danger: #ef4444;       /* Rose 500 */
+  --surface: #ffffff;
+  --bg-slate: #f8fafc;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  -webkit-tap-highlight-color: transparent;
+  scroll-behavior: smooth;
+  background-color: #f8fafc;
+  color: #0f172a;
+}
+
+h1, h2, h3, h4, .font-heading {
+  font-family: 'Outfit', sans-serif;
+}
+
+.font-mono-code {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Glassmorphism Accents */
+.glass-header {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+/* Glowing Pulsing Status for PENDING payments */
+@keyframes pulseGlowAmber {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 16px 4px rgba(245, 158, 11, 0.25);
+    transform: scale(1.01);
+  }
+}
+
+.pending-pulse-badge {
+  animation: pulseGlowAmber 2s infinite ease-in-out;
+}
+
+/* Subtle Shimmer for Stall Pass */
+.stall-pass-gradient {
+  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 40%, #064e3b 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.stall-pass-gradient::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    60deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.08) 50%,
+    transparent 70%
+  );
+  animation: hologramShine 6s infinite linear;
+  pointer-events: none;
+}
+
+@keyframes hologramShine {
+  0% { transform: translateY(-50%) rotate(0deg); }
+  100% { transform: translateY(-50%) rotate(360deg); }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Thermal Receipt Print Styles */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #printable-receipt-area, #printable-receipt-area * {
+    visibility: visible;
+  }
+  #printable-receipt-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 80mm;
+    margin: 0 auto;
+    padding: 12px;
+    background: white;
+    color: black !important;
+    font-family: 'JetBrains Mono', monospace !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* QR Code styling */
+#payment-qr-container img, #payment-qr-container canvas,
+#pass-qr-container img, #pass-qr-container canvas {
+  margin: 0 auto;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+/* View transitions */
+.view-section {
+  display: none;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.25s ease-out, transform 0.25s ease-out;
+}
+
+.view-section.active {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Custom modal transitions */
+.modal-backdrop {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.modal-backdrop.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Star rating interactive hover */
+.star-rating i {
+  cursor: pointer;
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+.star-rating i:hover {
+  transform: scale(1.2);
+}

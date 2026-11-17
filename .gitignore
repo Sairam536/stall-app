@@ -1,0 +1,125 @@
+# ==============================================================================
+# StallPay - Git Ignore File (.gitignore)
+# Prevents sensitive credentials, environment files, build artifacts, and OS files
+# from being committed to GitHub or any Git remote repository.
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# 1. Environment & Secret Credentials Files (CRITICAL - NEVER COMMIT SECRETS)
+# ------------------------------------------------------------------------------
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
+!*.env.example
+
+# Subdirectory environment files
+backend/.env
+backend/.env.local
+backend/*.env
+!backend/.env.example
+
+frontend/.env
+frontend/.env.local
+frontend/*.env
+!frontend/.env.example
+
+# Private API keys, certificates & service credentials
+*.pem
+*.key
+*.cert
+*.crt
+serviceAccountKey.json
+firebase-adminsdk*.json
+
+# ------------------------------------------------------------------------------
+# 2. Dependencies & Package Managers
+# ------------------------------------------------------------------------------
+node_modules/
+jspm_packages/
+web_modules/
+.pnp
+.pnp.js
+
+# ------------------------------------------------------------------------------
+# 3. Logs & Debugging
+# ------------------------------------------------------------------------------
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ------------------------------------------------------------------------------
+# 4. Build, Distribution & Cache Directories
+# ------------------------------------------------------------------------------
+dist/
+build/
+out/
+.cache/
+.parcel-cache/
+.eslintcache
+.stylelintcache
+*.tsbuildinfo
+.next/
+.nuxt/
+
+# ------------------------------------------------------------------------------
+# 5. Testing & Coverage
+# ------------------------------------------------------------------------------
+coverage/
+.nyc_output/
+
+# ------------------------------------------------------------------------------
+# 6. IDE, Code Editors & Tooling
+# ------------------------------------------------------------------------------
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.gemini/
+
+# ------------------------------------------------------------------------------
+# 7. Operating System Cache & Metadata Files
+# ------------------------------------------------------------------------------
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.directory
+.Trash-*
+
+# ------------------------------------------------------------------------------
+# 8. Temporary & Backup Files
+# ------------------------------------------------------------------------------
+tmp/
+temp/
+*.tmp
+*.temp
+*.bak
+*.swp
